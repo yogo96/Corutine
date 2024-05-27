@@ -5,46 +5,64 @@ using UnityEngine.UI;
 
 public class Counter : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI _counterText;
+    [SerializeField] private TextMeshProUGUI _textHandler;
     [SerializeField] private Button _button;
     [SerializeField] private float _period = 0.5f;
-    [SerializeField] private int _counterTick = 1;
+    [SerializeField] private int _tickSize = 1;
     [SerializeField] private bool _isActive = false;
 
-    private int _startCounterValue = 0;
+    private int _startTickValue = 0;
     private WaitForSeconds _delay;
+    private Coroutine _coroutine;
+
     private void Start()
     {
         _delay = new WaitForSeconds(_period);
-        _counterText.text = _startCounterValue.ToString();
+        _textHandler.text = _startTickValue.ToString();
     }
 
     private void OnEnable()
     {
-        _button.onClick.AddListener(TakeCount);
+        _button.onClick.AddListener(TakeTicks);
     }
 
     private void OnDisable()
     {
-        _button.onClick.RemoveListener(TakeCount);
+        _button.onClick.RemoveListener(TakeTicks);
     }
 
-    private void TakeCount()
+    private void Restart()
     {
-        _isActive = !_isActive;
-        StartCoroutine(CountTicks(_isActive));
-       
+        _coroutine = StartCoroutine(CountTicks());
+    }
+    
+    private void Stop()
+    {
+        if (_coroutine != null)
+            StopCoroutine(_coroutine);
     }
 
-    private IEnumerator CountTicks(bool isRunning)
+    private void TakeTicks()
     {
-        while (isRunning)
+        if (_isActive)
         {
-            int previousValue = int.Parse(_counterText.text);
-            int currentValue = previousValue + _counterTick;
-            _counterText.text = currentValue.ToString();
+            Stop();
+        }
+        else
+        {
+            Restart();
+        }
+        _isActive = !_isActive;
+    }
 
-            isRunning = _isActive;
+    private IEnumerator CountTicks()
+    {
+        while (true)
+        {
+            int previousValue = int.Parse(_textHandler.text);
+            int currentValue = previousValue + _tickSize;
+            _textHandler.text = currentValue.ToString();
+
             yield return _delay;
         }
     }
