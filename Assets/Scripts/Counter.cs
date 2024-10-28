@@ -5,19 +5,19 @@ using UnityEngine;
 
 public class Counter : MonoBehaviour
 {
-    public event Action<int> CounterChanged;
-
     [SerializeField] private float _durationTime = 0.5f;
     
     private int _currentValue;
     private WaitForSeconds _delay;
     private Coroutine _coroutine;
     private bool _isActive;
-
+    
+    public event Action<int> ValueChanged;
+    
     private void Start()
     {
         _currentValue = 0;
-        CounterChanged?.Invoke(_currentValue);
+        ValueChanged?.Invoke(_currentValue);
         _isActive = false;
         _delay = new WaitForSeconds(_durationTime);
     }
@@ -39,8 +39,9 @@ public class Counter : MonoBehaviour
 
     private void Restart()
     {
+        Stop();
         _isActive = true;
-        _coroutine = StartCoroutine(StartCounting());
+        _coroutine = StartCoroutine(CountingProcess());
     }
 
     private void Stop()
@@ -51,12 +52,12 @@ public class Counter : MonoBehaviour
             StopCoroutine(_coroutine);
     }
 
-    private IEnumerator StartCounting()
+    private IEnumerator CountingProcess()
     {
         while (_isActive)
         {
             _currentValue++;
-            CounterChanged?.Invoke(_currentValue);
+            ValueChanged?.Invoke(_currentValue);
             yield return _delay;
         }
     }
