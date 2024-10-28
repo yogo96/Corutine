@@ -8,12 +8,12 @@ public class CounterView : MonoBehaviour
 
     private void OnEnable()
     {
-        _counter.ChangeCounter += UpdateView;
+        _counter.CounterChanged += UpdateView;
     }
 
     private void OnDisable()
     {
-        _counter.ChangeCounter -= UpdateView;
+        _counter.CounterChanged -= UpdateView;
     }
 
     private void UpdateView(int value)

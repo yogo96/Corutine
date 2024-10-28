@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Counter : MonoBehaviour
 {
-    public event Action<int> ChangeCounter;
+    public event Action<int> CounterChanged;
 
     [SerializeField] private float _durationTime = 0.5f;
     
@@ -17,7 +17,7 @@ public class Counter : MonoBehaviour
     private void Start()
     {
         _currentValue = 0;
-        ChangeCounter?.Invoke(_currentValue);
+        CounterChanged?.Invoke(_currentValue);
         _isActive = false;
         _delay = new WaitForSeconds(_durationTime);
     }
@@ -56,7 +56,7 @@ public class Counter : MonoBehaviour
         while (_isActive)
         {
             _currentValue++;
-            ChangeCounter?.Invoke(_currentValue);
+            CounterChanged?.Invoke(_currentValue);
             yield return _delay;
         }
     }
