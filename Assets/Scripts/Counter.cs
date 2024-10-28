@@ -1,68 +1,60 @@
 using System.Collections;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class Counter : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI _textHandler;
-    [SerializeField] private Button _button;
-    [SerializeField] private float _period = 0.5f;
-    [SerializeField] private int _tickSize = 1;
-    [SerializeField] private bool _isActive = false;
+    [SerializeField] private float _durationTime = 0.5f;
 
-    private int _startTickValue = 0;
+    private int _currentValue;
     private WaitForSeconds _delay;
     private Coroutine _coroutine;
+    private bool _isActive;
 
     private void Start()
     {
-        _delay = new WaitForSeconds(_period);
-        _textHandler.text = _startTickValue.ToString();
+        _currentValue = 0;
+        _isActive = false;
+        _textHandler.text = _currentValue.ToString();
+        _delay = new WaitForSeconds(_durationTime);
     }
 
-    private void OnEnable()
+    private void Update()
     {
-        _button.onClick.AddListener(TakeTicks);
-    }
-
-    private void OnDisable()
-    {
-        _button.onClick.RemoveListener(TakeTicks);
+        if (Input.GetMouseButtonUp(0))
+        {
+            if (_isActive == false)
+            {
+                Restart();
+            }
+            else
+            {
+                Stop();
+            }
+        }
     }
 
     private void Restart()
     {
-        _coroutine = StartCoroutine(CountTicks());
+        _isActive = true;
+        _coroutine = StartCoroutine(StartCounting());
     }
-    
+
     private void Stop()
     {
+        _isActive = false;
+
         if (_coroutine != null)
             StopCoroutine(_coroutine);
     }
 
-    private void TakeTicks()
+    private IEnumerator StartCounting()
     {
-        if (_isActive)
+        while (_isActive)
         {
-            Stop();
-        }
-        else
-        {
-            Restart();
-        }
-        _isActive = !_isActive;
-    }
-
-    private IEnumerator CountTicks()
-    {
-        while (true)
-        {
-            int previousValue = int.Parse(_textHandler.text);
-            int currentValue = previousValue + _tickSize;
-            _textHandler.text = currentValue.ToString();
-
+            _currentValue++;
+            _textHandler.text = _currentValue.ToString();
             yield return _delay;
         }
     }
